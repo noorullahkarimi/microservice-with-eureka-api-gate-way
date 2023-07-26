@@ -18,6 +18,7 @@ I  tried to create a project best practice, for microservice that uses from the 
 ## How to run :
 
 Open every Folder with intelij IDEA sepratly, and let them to downlaod the dependencies with maven, ( if you can not download, use VPN ) now run the projects.
+the sort of running services is : eureka, services( is not important which is first instance users 1 or 2 or posts) at the last step api-gateway service.
 
 ###  Prerequisites
 
