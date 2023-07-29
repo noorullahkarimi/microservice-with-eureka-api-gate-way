@@ -32,7 +32,7 @@ As I said befor it is just a practice and for the learning, so do not use this f
 actully microservice are configuration and all the other code will be like the before.
 thanks for support :))
 
-# update tag 2.0.0
+# update v2.0.0
 
 ## Project description(for update v2.0.0)
 
