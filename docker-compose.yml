@@ -13,54 +13,70 @@ services:
     ports:
       - "8761:8761"
     restart: always
+    networks:
+      - my-network
   mypostservice:
     image: postsservice
     environment:
       server.port: 8082
       spring.application.name: service-posts
-      eureka.client.service-url.defaultZone: http://localhost:8761/eureka/
+      eureka.client.service-url.defaultZone: http://myeureka:8761/eureka/
+      spring.sleuth.sampler.probability: 1
+      spring.zipkin.baseUrl: http://zipkin:9411
     build: ./service-posts-1
     ports:
       - "8082:8082"
     restart: always
     depends_on:
       - myeureka
+    networks:
+      - my-network
   myuserservice2:
     image: users2
     environment:
       server.port: 8083
       spring.application.name: service-users
-      eureka.client.service-url.defaultZone: http://localhost:8761/eureka/
+      service.posts.url: http://mypostservice:8082
+      eureka.client.service-url.defaultZone: http://myeureka:8761/eureka/
       resilience4j.circuitbreaker.instances.mycircuit.maxRetryAttempts: 3
       resilience4j.retry.instances.mycircuit.waitDuration: 1s
       resilience4j.retry.instances.mycircuit.enableExponentialBackoff: true
+      spring.sleuth.sampler.probability: 1
+      spring.zipkin.baseUrl: http://zipkin:9411
     build: ./service-users-2
     ports:
       - "8083:8083"
     restart: always
     depends_on:
       - myeureka
+    networks:
+      - my-network
   myuserservice1:
     image: users1
     environment: 
       server.port: 8081
       spring.application.name: service-users
-      eureka.client.service-url.defaultZone: http://localhost:8761/eureka/
+      service.posts.url: http://mypostservice:8082
+      eureka.client.service-url.defaultZone: http://myeureka:8761/eureka/
       resilience4j.circuitbreaker.instances.mycircuit.maxRetryAttempts: 3
       resilience4j.retry.instances.mycircuit.waitDuration: 1s
       resilience4j.retry.instances.mycircuit.enableExponentialBackoff: true
+      spring.sleuth.sampler.probability: 1
+      spring.zipkin.baseUrl: http://zipkin:9411
     build: ./service-users-1
     ports:
       - "8081:8081"
     restart: always
     depends_on:
       - myeureka
+    networks:
+      - my-network
   myapigateway:
     image: apigateway
     environment:
       spring.application.name: api-gateway
       server.port: 8765
-      eureka.client.service-url.defaultZone: http://localhost:8761/eureka/
+      eureka.client.service-url.defaultZone: http://myeureka:8761/eureka/
       spring.cloud.gateway.discovery.locator.enabled: true
     build: ./api-gateway
     ports:
@@ -68,3 +84,13 @@ services:
     restart: always
     depends_on:
       - myeureka
+    networks:
+      - my-network
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - my-network
+networks:
+  my-network:
